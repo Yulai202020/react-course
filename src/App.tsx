@@ -33,7 +33,7 @@
 // export default App;
 
 import UseStateObj from "./UseStateObj";
-import UseStateExample from "./UseStateExample";
+// import UseStateExample from "./UseStateExample";
 
 function App() {
   return (
