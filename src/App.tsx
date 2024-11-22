@@ -1,46 +1,27 @@
-// import { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-// function App() {
-//   const [data, setData] = useState<string>("");
-//   const [click, setClick] = useState<boolean>(true);
+import TikTakToe from "./components/TikTakToe";
+import PageNotFound from "./components/PageNotFound";
 
-//   useEffect(() => {
-//     fetch("http://localhost:4000/html", {
+import UseStateObj from "./components/UseStateObj";
+import UseStateExample from "./components/UseStateExample";
+import Images from "./components/Images";
 
-//     }).then((res) => res.text()).then((text) => {
-//       function getData() {
-//         setData(text);
-//       }
-
-//       setTimeout(getData, 1000);
-//     })
-//   }, [click]);
-
-//   return (
-//     <>
-//     <main>
-//     {data !== "" ? (
-//       <>{data}</>
-//     ) : (
-//       <>Loading ...</>
-//     )}
-//     </main>
-//     <button onClick={() => { setClick(!click); setData("") }}>Refresh</button>
-//     </>
-//   )
-// }
-
-// export default App;
-
-import UseStateObj from "./UseStateObj";
-// import UseStateExample from "./UseStateExample";
+import "./styles/app.scss";
 
 function App() {
   return (
-    <>
-      <UseStateObj/>
-      {/* <UseStateExample/> */}
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<TikTakToe />}/>
+
+        <Route path="/images" element={<Images />}/>
+        <Route path="/usestateobj" element={<UseStateObj />}/>
+        <Route path="/usestateexample" element={<UseStateExample />}/>
+
+        <Route path="*" element={<PageNotFound />}/>
+      </Routes>
+    </Router>
   )
 }
 

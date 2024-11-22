@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { useState } from "react";
 
 function UseStateExample() {
     const [number, setNumber] = useState(0);
