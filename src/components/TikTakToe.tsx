@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import "../styles/tiktaktoe.scss"
+import styles from "../styles/tiktaktoe.module.scss"
 import { MouseEventHandler } from "react";
 
 interface Probs {
@@ -9,7 +9,7 @@ interface Probs {
 
 export function Square({field, callback}: Probs) {
     return (
-        <button onClick={callback} className="square">{field}</button>
+        <button onClick={callback} className={styles.square}>{field}</button>
     )
 }
 
@@ -76,7 +76,7 @@ function TikTakToe() {
         <>
             <p>{isCrossMove ? "Cross's move" : "Circle's move"}</p>
 
-            <div className="grid-container">
+            <div className={styles.container}>
                 {Array(9).fill("").map((_, index) => (
                     <Square key={index} field={field[index]} callback={getCallback(index)}/>
                 ))}

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import TikTakToe from "./components/TikTakToe";
+import ChessGame from "./components/ChessGame";
 import PageNotFound from "./components/PageNotFound";
 
 import UseStateObj from "./components/UseStateObj";
@@ -14,6 +15,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<TikTakToe />}/>
+        <Route path="/chess" element={<ChessGame />}/>
 
         <Route path="/images" element={<Images />}/>
         <Route path="/usestateobj" element={<UseStateObj />}/>
