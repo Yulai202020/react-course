@@ -25,6 +25,8 @@ function ChessGame() {
 
     const [tiggerFieldInit, setTriggerFieldInit] = useState<boolean>(true);
     const [tiggerMoving, setTriggerMoving] = useState<boolean>(true);
+    
+    const [selectedId, setSelectedId] = useState<number>(-1);
 
     function isMoveValid(move: string) {
         try {
@@ -42,14 +44,42 @@ function ChessGame() {
         setIsGameOver(false);
     }
 
+    function getAllSquares() {
+        const squares = [];
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+    
+        for (let rank of ranks) {
+            for (let file of files) {
+                squares.push(file + rank);
+            }
+        }
+        return squares;
+    }
+
     // set position
     useEffect(() => {
         // base position
-        let a = [...field];
+        let BaseField = [...field];
+        const board = chess.board();
+        const squares = getAllSquares();
+
+        squares.map((item, id) => {
+            const piece = board.flat().find(s => s?.square === item);
+            let color: boolean | null;
+
+            if (piece?.color === "w") {
+                color = true;
+            } else if (piece?.color === "b") {
+                color = false;
+            } else {
+                color = null;
+            }
+
+            BaseField[id] = {display: piece?.type === undefined ? "" : (piece.color === "b" ? piece.type : piece.type.toUpperCase()) , isWhitePeace: color};
+        });
     
-        a[62] = {display: "K", isWhitePeace: true};
-    
-        setField(a);
+        setField(BaseField);
     }, [tiggerFieldInit]);
 
     // change postion on move
@@ -58,11 +88,14 @@ function ChessGame() {
             alert("Game is over, please clear board for starting new game!");
         } else if (to !== -1 && from !== -1) {
             const letters = [ "a", "b", "c", "d", "e", "f", "g", "h" ];
-            // get move
-            const from_as_needed = letters[(from + 1) % 8 - 1] + (8 - Math.floor(from / 8));
-            const to_as_needed = letters[(to + 1) % 8 - 1] + (8 - Math.floor(to / 8));
 
-            const move = from_as_needed+to_as_needed;
+            // get move
+            const from_as_needed = letters[from % 8] + (8 - Math.floor(from / 8));
+            const to_as_needed = letters[to % 8] + (8 - Math.floor(to / 8));
+
+            const move = from_as_needed + to_as_needed;
+
+            console.log(move);
 
             // check if its legit or game over
 
@@ -113,7 +146,7 @@ function ChessGame() {
 
         <div className={styles.container}>
             {field.map((item, index) => (
-                <button key={index} className={styles.square} onClick={() => {
+                <button key={index} className={styles.square} style={{backgroundColor: index == selectedId ? "orange" : ""}} onClick={() => {
 
                     if (fromIsSetted) {
                         setTo(index);
@@ -121,10 +154,14 @@ function ChessGame() {
 
                         // trig changing
                         setTriggerMoving(prev => !prev);
+
+                        setSelectedId(-1);
                     } else {
                         if (item.display === "" || item.isWhitePeace !== isWhiteTurn) {
                             alert("Its not your peace!");
                         } else {
+                            setSelectedId(index);
+
                             setFrom(index);
                             setFromIsSetted(true);
                         }
