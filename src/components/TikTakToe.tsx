@@ -1,57 +1,89 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import "../styles/tiktaktoe.scss"
+import { MouseEventHandler } from "react";
 
 interface Probs {
-    variable: boolean;
-    setFunction: Function;
+    field: string;
+    callback: MouseEventHandler<HTMLButtonElement>;
 }
 
-export function Square({variable, setFunction}: Probs) {
-    const [value, setValue] = useState<string>("");
+export function Square({field, callback}: Probs) {
     return (
-        <button
-
-        onClick={(e) => {
-            if (e.target.value === "") {
-                setValue(variable ? "X" : "O");
-                setFunction((prevVal: boolean) => !prevVal);
-            }
-        }}
-
-        style={{
-            border: "1px solid black",
-            width: "50px",
-            height: "50px"
-        }}
-
-        value={value}
-
-        >{value}</button>
+        <button onClick={callback} className="square">{field}</button>
     )
 }
 
 function TikTakToe() {
-    const [isX, setIsX] = useState<boolean>(true);
+    function createEmptyField() {
+        return Array(9).fill("");
+    }
+
+    const [gameIsDone, setGameIsDone] = useState<boolean>(false);
+    const [isCrossMove, setIsCrossMove] = useState<boolean>(true);
+    const [field, setField] = useState<string[]>(createEmptyField());
+
+    function getCallback(id: number) {
+        return () => {
+            if (gameIsDone) {
+                alert("Game is over, please clear board for starting new game!");
+                return;
+            } else if (field[id] === "") {
+                let tmpField = [...field];
+                tmpField[id] = isCrossMove ? "X" : "O";
+                setField(tmpField);
+                setIsCrossMove(prev => !prev)
+                return;
+            } else {
+                alert("You cant change!");
+                return;
+            }
+        };
+    }
+
+    function Clear() {
+        setField(createEmptyField());
+        setGameIsDone(false);
+        setIsCrossMove(true);
+    }
+
+    useEffect(() => {
+        const winPatterns = [
+            [0, 1, 2], // Top row
+            [3, 4, 5], // Middle row
+            [6, 7, 8], // Bottom row
+            [0, 3, 6], // Left column
+            [1, 4, 7], // Middle column
+            [2, 5, 8], // Right column
+            [0, 4, 8], // Diagonal 1
+            [2, 4, 6]  // Diagonal 2
+        ];
+    
+        for (let pattern of winPatterns) {
+            const [a, b, c] = pattern;
+            if (field[a] && field[a] === field[b] && field[a] === field[c]) {
+                alert(field[a] + " won, now you can clear board and start game again!");
+                setGameIsDone(true);
+            }
+        }
+    
+        if (!field.includes('')) {
+            alert("Draw, none won, you can clear board and start game again.");
+            setGameIsDone(true);
+        }
+    }, [field]);
+
     return (
-        <div className="grid-container">
-            {/* <div className="row"> */}
-            <Square variable={isX} setFunction={setIsX}/>
-            <Square variable={isX} setFunction={setIsX}/>
-            <Square variable={isX} setFunction={setIsX}/>
-            {/* </div> */}
+        <>
+            <p>{isCrossMove ? "Cross's move" : "Circle's move"}</p>
 
-            {/* <div className="row"> */}
-            <Square variable={isX} setFunction={setIsX}/>
-            <Square variable={isX} setFunction={setIsX}/>
-            <Square variable={isX} setFunction={setIsX}/>
-            {/* </div> */}
+            <div className="grid-container">
+                {Array(9).fill("").map((_, index) => (
+                    <Square key={index} field={field[index]} callback={getCallback(index)}/>
+                ))}
+            </div>
 
-            {/* <div className="row"> */}
-            <Square variable={isX} setFunction={setIsX}/>
-            <Square variable={isX} setFunction={setIsX}/>
-            <Square variable={isX} setFunction={setIsX}/>
-            {/* </div> */}
-        </div>
+            <button onClick={Clear}>Clear board</button>
+        </>
     )
 }
 
