@@ -7,6 +7,14 @@ interface Data {
     isWhitePeace: boolean | null;
 }
 
+function isUppercase(char: string) {
+    return char === char.toUpperCase();
+}
+
+function isLowercase(char: string) {
+    return char === char.toLowerCase();
+}
+
 function ChessGame() {
     function createEmptyField() {
         return Array(64).fill({display: "", isWhitePeace: null});
@@ -138,7 +146,7 @@ function ChessGame() {
                 alert("Sorry but its illigal move!");
             }
         }
-    }, [tiggerMoving])
+    }, [tiggerMoving]);
 
     return (
         <>
@@ -149,13 +157,21 @@ function ChessGame() {
                 <button key={index} className={styles.square} style={{backgroundColor: index == selectedId ? "orange" : ""}} onClick={() => {
 
                     if (fromIsSetted) {
-                        setTo(index);
-                        setFromIsSetted(false);
+                        console.log((isWhiteTurn && isUppercase(item.display)))
+                        console.log((!isWhiteTurn && isLowercase(item.display)))
+                        console.log(item.display !== "")
+                        if (((isWhiteTurn && isUppercase(item.display)) || (!isWhiteTurn && isLowercase(item.display))) && item.display !== "") {
+                            setSelectedId(index);
+                            setFrom(index);
+                        } else {
+                            setTo(index);
+                            setFromIsSetted(false);
 
-                        // trig changing
-                        setTriggerMoving(prev => !prev);
+                            // trig changing
+                            setTriggerMoving(prev => !prev);
 
-                        setSelectedId(-1);
+                            setSelectedId(-1);
+                        }
                     } else {
                         if (item.display === "" || item.isWhitePeace !== isWhiteTurn) {
                             alert("Its not your peace!");
