@@ -54,7 +54,6 @@ function ChessGame() {
         type: ""
     });
 
-
     function isMoveValid(from: string, to: string) {
         try {
             const getMove = chess.current.move({from: from, to: to});

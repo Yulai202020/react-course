@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import styles from "../styles/tiktaktoe.module.scss"
 import { MouseEventHandler } from "react";
+import Message from "./Message";
 
 interface Probs {
     field: string;
@@ -13,19 +14,24 @@ export function Square({field, callback}: Probs) {
     )
 }
 
-function TikTakToe() {
-    function createEmptyField() {
-        return Array(9).fill("");
-    }
+function createEmptyField() {
+    return Array(9).fill("");
+}
 
+function TikTakToe() {
     const [gameIsDone, setGameIsDone] = useState<boolean>(false);
     const [isCrossMove, setIsCrossMove] = useState<boolean>(true);
     const [field, setField] = useState<string[]>(createEmptyField());
 
+    const [message, setMessage] = useState({
+        message: "",
+        type: ""
+    });
+
     function getCallback(id: number) {
         return () => {
             if (gameIsDone) {
-                alert("Game is over, please clear board for starting new game!");
+                setMessage({message: "Game is over, please clear board for starting new game!", type: "primary"});
                 return;
             } else if (field[id] === "") {
                 let tmpField = [...field];
@@ -34,7 +40,7 @@ function TikTakToe() {
                 setIsCrossMove(prev => !prev)
                 return;
             } else {
-                alert("You cant change!");
+                setMessage({message: "You cant change!", type: "error"});
                 return;
             }
         };
@@ -61,13 +67,13 @@ function TikTakToe() {
         for (let pattern of winPatterns) {
             const [a, b, c] = pattern;
             if (field[a] && field[a] === field[b] && field[a] === field[c]) {
-                alert(field[a] + " won, now you can clear board and start game again!");
+                setMessage({message: field[a] + " won, now you can clear board and start game again!", type: "message"});
                 setGameIsDone(true);
             }
         }
     
         if (!field.includes('')) {
-            alert("Draw, none won, you can clear board and start game again.");
+            setMessage({message: "Draw, none won, you can clear board and start game again.", type: "message"});
             setGameIsDone(true);
         }
     }, [field]);
@@ -82,9 +88,23 @@ function TikTakToe() {
                 ))}
             </div>
 
+            {message.message !== "" && (
+                <div>
+                    <Message message={message.message} type={message.type}/>
+                    <button onClick={() => {
+                        setMessage({
+                            message: "",
+                            type: ""
+                        });
+                    }}>Clear messages</button>
+                </div>
+            )}
+
             <button onClick={Clear}>Clear board</button>
         </>
     )
 }
 
 export default TikTakToe;
+
+alert
