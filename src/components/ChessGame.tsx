@@ -1,6 +1,7 @@
 import styles from "../styles/chess.module.scss"
 import { useEffect, useRef, useState } from "react";
 import { Chess } from 'chess.js';
+import Message from "./Message";
 
 interface Data {
     display: string;
@@ -48,6 +49,12 @@ function ChessGame() {
     
     const [selectedId, setSelectedId] = useState<number>(-1);
 
+    const [message, setMessage] = useState({
+        message: "",
+        type: ""
+    });
+
+
     function isMoveValid(from: string, to: string) {
         try {
             const getMove = chess.current.move({from: from, to: to});
@@ -62,6 +69,10 @@ function ChessGame() {
         setTriggerFieldInit(prev => !prev);
         chess.current.reset();
         setIsGameOver(false);
+        setMessage({
+            message: "",
+            type: ""
+        })
     }
 
     // set position
@@ -92,7 +103,7 @@ function ChessGame() {
     // change postion on move
     useEffect(() => {
         if (isGameOver) {
-            alert("Game is over, please clear board for starting new game!");
+            setMessage({message: "Game is over, please clear board for starting new game!", type: "primary"});
         } else if (to !== -1 && from !== -1) {
             const letters = [ "a", "b", "c", "d", "e", "f", "g", "h" ];
 
@@ -120,24 +131,22 @@ function ChessGame() {
                     // check someone gg
                     if (chess.current.isCheckmate()) {
                         const winner = chess.current.turn() === 'w' ? 'Black' : 'White';
-                        alert(`${winner} wins by checkmate!`);
+                        setMessage({message: `${winner} wins by checkmate!`, type: "message"});
                     }
 
                     // check draw
                     if (chess.current.isStalemate()) {
-                        alert('Stalemate! The game is a draw.');
+                        setMessage({message: "Stalemate! The game is a draw.", type: "message"});
                     } else if (chess.current.isInsufficientMaterial()) {
-                        alert('Insufficient material! The game is a draw.');
+                        setMessage({message: "Insufficient material! The game is a draw.", type: "message"});
                     } else if (chess.current.isThreefoldRepetition()) {
-                        alert('Threefold repetition! The game is a draw.');
-                    } else {
-                        alert('The game ended in a draw for another reason.');
+                        setMessage({message: "Threefold repetition! The game is a draw.", type: "message"});
                     }
 
                     setIsGameOver(true);
                 }
             } else {
-                alert("Sorry but its illigal move!");
+                setMessage({message: "Sorry but its illigal move!", type: "error"});
             }
         }
     }, [tiggerMoving]);
@@ -168,7 +177,7 @@ function ChessGame() {
                         }
                     } else {
                         if (item.display === "" || item.isWhitePeace !== (chess.current.turn() === "w")) {
-                            alert("Its not your peace!");
+                            setMessage({message: "Its not your peace!", type: "error"});
                         } else {
                             setSelectedId(index);
 
@@ -179,6 +188,18 @@ function ChessGame() {
                 }}>{item.display}</button>
             ))}
         </div>
+
+        {message.message !== "" && (
+            <div>
+                <Message message={message.message} type={message.type}/>
+                <button onClick={() => {
+                    setMessage({
+                        message: "",
+                        type: ""
+                    });
+                }}>Clear messages</button>
+            </div>
+        )}
 
         <button onClick={Clear}>Clear</button>
         </>
