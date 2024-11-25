@@ -10,15 +10,15 @@ import Parent from "./components/Parent";
 
 import Controler from "./components/Controler";
 import Navigation from "./components/Navigation";
-import UseRefExample from "./components/UseRefExample";
 
+import UseRefExample from "./components/UseRefExample";
 import "./styles/app.scss";
 
 function App() {
   return (
     <>
-    <Navigation />
     <Router>
+      <Navigation />
       <Routes>
         <Route path="/" element={<TikTakToe />}/>
         <Route path="/chess" element={<ChessGame />}/>

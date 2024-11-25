@@ -1,17 +1,18 @@
+import { NavLink } from "react-router-dom";
 import styles from  "../styles/navigation.module.scss";
 
 function Navigation() {
     return (
         <>
-        <nav className={styles.navbar}>
-            <li><a href="/">TikTakToe</a></li>
-            <li><a href="/chess">Chess</a></li>
-            <li><a href="/controler">Controler</a></li>
-            <li><a href="/parent">Parent</a></li>
-            <li><a href="/usestateobject">useState with object</a></li>
-            <li><a href="/usestateexample">useState Example</a></li>
-            <li><a href="/userefexample">useRef Example</a></li>
-        </nav>
+        <div className={styles.navbar}>
+            <NavLink className={styles.link} to="/">TikTakToe</NavLink>
+            <NavLink className={styles.link} to="/chess">Chess</NavLink>
+            <NavLink className={styles.link} to="/controler">Controler</NavLink>
+            <NavLink className={styles.link} to="/parent">Parent</NavLink>
+            <NavLink className={styles.link} to="/usestateobject">useState with object</NavLink>
+            <NavLink className={styles.link} to="/usestateexample">useState Example</NavLink>
+            <NavLink className={styles.link} to="/userefexample">useRef Example</NavLink>
+        </div>
         </>
     );
 }

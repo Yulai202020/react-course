@@ -6,7 +6,7 @@ interface Probs {
 function Message({type, message}: Probs) {
     let backgroundColor = "";
     if (type === "primary") {
-
+        backgroundColor
     }
     return (
         <>
