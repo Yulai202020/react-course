@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function UseStateObj() {
+function UseStateObject() {
     const [coords, setCoords] = useState({
         x: 100,
         y: 100
@@ -32,4 +32,4 @@ function UseStateObj() {
     );
 }
 
-export default UseStateObj;
+export default UseStateObject;

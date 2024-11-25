@@ -1,5 +1,5 @@
 import styles from "../styles/chess.module.scss"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Chess } from 'chess.js';
 
 interface Data {
@@ -15,16 +15,28 @@ function isLowercase(char: string) {
     return char === char.toLowerCase();
 }
 
-function ChessGame() {
-    function createEmptyField() {
-        return Array(64).fill({display: "", isWhitePeace: null});
-    }
+function createEmptyField() {
+    return Array(64).fill({display: "", isWhitePeace: null});
+}
 
-    const chess = new Chess();
+function getAllSquares() {
+    const squares = [];
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+
+    for (let rank of ranks) {
+        for (let file of files) {
+            squares.push(file + rank);
+        }
+    }
+    return squares;
+}
+
+function ChessGame() {
+    const chess = useRef(new Chess());
 
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
     const [fromIsSetted, setFromIsSetted] = useState<boolean>(false);
-    const [isWhiteTurn, setIsWhiteTurn] = useState<boolean>(true);
 
     const [from, setFrom] = useState<number>(-1);
     const [to, setTo] = useState<number>(-1);
@@ -36,10 +48,10 @@ function ChessGame() {
     
     const [selectedId, setSelectedId] = useState<number>(-1);
 
-    function isMoveValid(move: string) {
+    function isMoveValid(from: string, to: string) {
         try {
-            chess.move(move);
-            return true;
+            const getMove = chess.current.move({from: from, to: to});
+            return !(getMove === null);
         } catch {
             return false;
         }
@@ -48,28 +60,15 @@ function ChessGame() {
     function Clear() {
         setField(createEmptyField());
         setTriggerFieldInit(prev => !prev);
-        setIsWhiteTurn(true);
+        chess.current.reset();
         setIsGameOver(false);
-    }
-
-    function getAllSquares() {
-        const squares = [];
-        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
-    
-        for (let rank of ranks) {
-            for (let file of files) {
-                squares.push(file + rank);
-            }
-        }
-        return squares;
     }
 
     // set position
     useEffect(() => {
         // base position
         let BaseField = [...field];
-        const board = chess.board();
+        const board = chess.current.board();
         const squares = getAllSquares();
 
         squares.map((item, id) => {
@@ -101,13 +100,10 @@ function ChessGame() {
             const from_as_needed = letters[from % 8] + (8 - Math.floor(from / 8));
             const to_as_needed = letters[to % 8] + (8 - Math.floor(to / 8));
 
-            const move = from_as_needed + to_as_needed;
-
-            console.log(move);
-
             // check if its legit or game over
 
-            if (isMoveValid(move)) {
+            if (isMoveValid(from_as_needed, to_as_needed)) {
+                
                 let tmpField = [...field];
         
                 tmpField[to] = tmpField[from];
@@ -120,19 +116,19 @@ function ChessGame() {
                 setFrom(-1);
 
                 // is gg
-                if (chess.isGameOver()) {
+                if (chess.current.isGameOver()) {
                     // check someone gg
-                    if (chess.isCheckmate()) {
-                        const winner = chess.turn() === 'w' ? 'Black' : 'White';
+                    if (chess.current.isCheckmate()) {
+                        const winner = chess.current.turn() === 'w' ? 'Black' : 'White';
                         alert(`${winner} wins by checkmate!`);
                     }
 
                     // check draw
-                    if (chess.isStalemate()) {
+                    if (chess.current.isStalemate()) {
                         alert('Stalemate! The game is a draw.');
-                    } else if (chess.isInsufficientMaterial()) {
+                    } else if (chess.current.isInsufficientMaterial()) {
                         alert('Insufficient material! The game is a draw.');
-                    } else if (chess.isThreefoldRepetition()) {
+                    } else if (chess.current.isThreefoldRepetition()) {
                         alert('Threefold repetition! The game is a draw.');
                     } else {
                         alert('The game ended in a draw for another reason.');
@@ -140,8 +136,6 @@ function ChessGame() {
 
                     setIsGameOver(true);
                 }
-
-                setIsWhiteTurn(prev => !prev);
             } else {
                 alert("Sorry but its illigal move!");
             }
@@ -150,17 +144,17 @@ function ChessGame() {
 
     return (
         <>
-        <p>{isWhiteTurn ? "White move" : "Blacks move"}</p>
+        <p>{chess.current.turn() === "w" ? "White move" : "Blacks move"}</p>
 
         <div className={styles.container}>
             {field.map((item, index) => (
                 <button key={index} className={styles.square} style={{backgroundColor: index == selectedId ? "orange" : ""}} onClick={() => {
 
                     if (fromIsSetted) {
-                        console.log((isWhiteTurn && isUppercase(item.display)))
-                        console.log((!isWhiteTurn && isLowercase(item.display)))
-                        console.log(item.display !== "")
-                        if (((isWhiteTurn && isUppercase(item.display)) || (!isWhiteTurn && isLowercase(item.display))) && item.display !== "") {
+                        if (
+                            ((chess.current.turn() === "w" && isUppercase(item.display)) ||
+                            (chess.current.turn() === "b" && isLowercase(item.display)))
+                            && item.display !== "") {
                             setSelectedId(index);
                             setFrom(index);
                         } else {
@@ -173,7 +167,7 @@ function ChessGame() {
                             setSelectedId(-1);
                         }
                     } else {
-                        if (item.display === "" || item.isWhitePeace !== isWhiteTurn) {
+                        if (item.display === "" || item.isWhitePeace !== (chess.current.turn() === "w")) {
                             alert("Its not your peace!");
                         } else {
                             setSelectedId(index);
