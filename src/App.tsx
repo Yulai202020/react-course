@@ -13,6 +13,8 @@ import Navigation from "./components/Navigation";
 
 import UseRefExample from "./components/UseRefExample";
 import "./styles/app.scss";
+import UsingCustomHook from "./components/UsingCustomHook";
+import UseEffectExample from "./components/UseEffectExample";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
         <Route path="/usestateobject" element={<UseStateObject />}/>
         <Route path="/usestateexample" element={<UseStateExample />}/>
         <Route path="/userefexample" element={<UseRefExample />}/>
+        <Route path="/usingcustomhook" element={<UsingCustomHook />}/>
+        <Route path="/useeffectexample" element={<UseEffectExample />}/>
 
         <Route path="*" element={<PageNotFound />}/>
       </Routes>

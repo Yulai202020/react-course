@@ -17,15 +17,15 @@ function UseRefExample() {
     }
 
     return (
-        <>
-            {someVal}<br/>
-            {ref.current}
+        <div className="centered">
+            <p>{someVal}</p>
+            <p>{ref.current}</p>
             <button onClick={handleClick}>
                 Increment
             </button>
 
             <button onClick={handleReRender}>Re-Render</button>
-        </>
+        </div>
     )
 }
 

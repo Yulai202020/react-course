@@ -5,7 +5,7 @@ import Message from "./Message";
 
 interface Data {
     display: string;
-    isWhitePeace: boolean | null;
+    isWhitePiece: boolean | null;
 }
 
 function isUppercase(char: string) {
@@ -17,7 +17,7 @@ function isLowercase(char: string) {
 }
 
 function createEmptyField() {
-    return Array(64).fill({display: "", isWhitePeace: null});
+    return Array(64).fill({display: "", isWhitePiece: null});
 }
 
 function getAllSquares() {
@@ -33,7 +33,12 @@ function getAllSquares() {
     return squares;
 }
 
+export function Button() {
+
+}
+
 function ChessGame() {
+    const letters = [ "a", "b", "c", "d", "e", "f", "g", "h" ];
     const chess = useRef(new Chess());
 
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
@@ -41,6 +46,9 @@ function ChessGame() {
 
     const [from, setFrom] = useState<number>(-1);
     const [to, setTo] = useState<number>(-1);
+
+    const from_coords = [from % 8, (8 - Math.floor(from / 8))];
+    const to_coords = [to % 8, (8 - Math.floor(to / 8))];
 
     const [field, setField] = useState<Data[]>(createEmptyField());
 
@@ -93,7 +101,7 @@ function ChessGame() {
                 color = null;
             }
 
-            BaseField[id] = {display: piece?.type === undefined ? "" : (piece.color === "b" ? piece.type : piece.type.toUpperCase()) , isWhitePeace: color};
+            BaseField[id] = {display: piece?.type === undefined ? "" : (piece.color === "b" ? piece.type : piece.type.toUpperCase()) , isWhitePiece: color};
         });
     
         setField(BaseField);
@@ -104,20 +112,16 @@ function ChessGame() {
         if (isGameOver) {
             setMessage({message: "Game is over, please clear board for starting new game!", type: "primary"});
         } else if (to !== -1 && from !== -1) {
-            const letters = [ "a", "b", "c", "d", "e", "f", "g", "h" ];
-
-            // get move
-            const from_as_needed = letters[from % 8] + (8 - Math.floor(from / 8));
-            const to_as_needed = letters[to % 8] + (8 - Math.floor(to / 8));
-
             // check if its legit or game over
 
-            if (isMoveValid(from_as_needed, to_as_needed)) {
-                
+            const field_from = letters[from_coords[0]] + from_coords[1];
+            const field_to = letters[to_coords[0]] + to_coords[1];
+
+            if (isMoveValid(field_from, field_to)) {
                 let tmpField = [...field];
         
                 tmpField[to] = tmpField[from];
-                tmpField[from] = {display: "", isWhitePeace: null};
+                tmpField[from] = {display: "", isWhitePiece: null};
         
                 setField(tmpField);
         
@@ -151,57 +155,59 @@ function ChessGame() {
     }, [tiggerMoving]);
 
     return (
-        <>
-        <p>{chess.current.turn() === "w" ? "White move" : "Blacks move"}</p>
+        <div className="centered">
+            <p>{chess.current.turn() === "w" ? "White move" : "Blacks move"}</p>
 
-        <div className={styles.container}>
-            {field.map((item, index) => (
-                <button key={index} className={styles.square} style={{backgroundColor: index == selectedId ? "orange" : ""}} onClick={() => {
+            <div className={styles.container}>
+                {field.map((item, index) => (
+                    <button
+                    key={index}
+                    className={`${styles.square} ${index === selectedId ? styles.selected : ((index % 8 + Math.floor(index / 8)) % 2 == 0 ? styles.even : styles.not_even)}`}
+                    onClick={() => {
+                        if (fromIsSetted) {
+                            if (
+                                ((chess.current.turn() === "w" && isUppercase(item.display)) ||
+                                (chess.current.turn() === "b" && isLowercase(item.display)))
+                                && item.display !== "") {
+                                    setSelectedId(index);
+                                    setFrom(index);
+                            } else {
+                                setTo(index);
+                                setFromIsSetted(false);
 
-                    if (fromIsSetted) {
-                        if (
-                            ((chess.current.turn() === "w" && isUppercase(item.display)) ||
-                            (chess.current.turn() === "b" && isLowercase(item.display)))
-                            && item.display !== "") {
-                            setSelectedId(index);
-                            setFrom(index);
+                                // trig changing
+                                setTriggerMoving(prev => !prev);
+
+                                setSelectedId(-1);
+                            }
                         } else {
-                            setTo(index);
-                            setFromIsSetted(false);
+                            if (item.display === "" || item.isWhitePiece !== (chess.current.turn() === "w")) {
+                                setMessage({message: "Its not your piece!", type: "error"});
+                            } else {
+                                setSelectedId(index);
 
-                            // trig changing
-                            setTriggerMoving(prev => !prev);
-
-                            setSelectedId(-1);
+                                setFrom(index);
+                                setFromIsSetted(true);
+                            }
                         }
-                    } else {
-                        if (item.display === "" || item.isWhitePeace !== (chess.current.turn() === "w")) {
-                            setMessage({message: "Its not your peace!", type: "error"});
-                        } else {
-                            setSelectedId(index);
-
-                            setFrom(index);
-                            setFromIsSetted(true);
-                        }
-                    }
-                }}>{item.display}</button>
-            ))}
-        </div>
-
-        {message.message !== "" && (
-            <div>
-                <Message message={message.message} type={message.type}/>
-                <button onClick={() => {
-                    setMessage({
-                        message: "",
-                        type: ""
-                    });
-                }}>Clear messages</button>
+                    }}>{item.display}</button>
+                ))}
             </div>
-        )}
 
-        <button onClick={Clear}>Clear</button>
-        </>
+            {message.message !== "" && (
+                <div>
+                    <Message message={message.message} type={message.type}/>
+                    <button onClick={() => {
+                        setMessage({
+                            message: "",
+                            type: ""
+                        });
+                    }}>Clear messages</button>
+                </div>
+            )}
+
+            <button onClick={Clear}>Clear</button>
+        </div>
     )
 }
 

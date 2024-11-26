@@ -79,7 +79,7 @@ function TikTakToe() {
     }, [field]);
 
     return (
-        <>
+        <div className="centered">
             <p>{isCrossMove ? "Cross's move" : "Circle's move"}</p>
 
             <div className={styles.container}>
@@ -101,7 +101,7 @@ function TikTakToe() {
             )}
 
             <button onClick={Clear}>Clear board</button>
-        </>
+        </div>
     )
 }
 

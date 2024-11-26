@@ -20,14 +20,14 @@ function Controler() {
     const [id, setId] = useState<number>(-1);
 
     return (
-        <>
-        <Panel isActive={id === 0} onShow={() => {setId(0)}}>
-            <div>hello</div>
-        </Panel>
-        <Panel isActive={id === 1} onShow={() => {setId(1)}}>
-            <div>world</div>
-        </Panel>
-        </>
+        <div className="centered">
+            <Panel isActive={id === 0} onShow={() => {setId(0)}}>
+                <div>hello</div>
+            </Panel>
+            <Panel isActive={id === 1} onShow={() => {setId(1)}}>
+                <div>world</div>
+            </Panel>
+        </div>
     );
 }
 
