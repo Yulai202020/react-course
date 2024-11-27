@@ -1,11 +1,12 @@
 .navbar {
+    flex-wrap: wrap;
+    min-width: 100%;
+    font-size: large;
     background-color: #333;
     padding: 15px 30px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
-
 
 .link {
     text-decoration: none;
@@ -21,5 +22,28 @@
 
     &:visited {
         color: #ccc;
+    }
+}
+@media (max-width: 400px) {
+    .navbar {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 800px) {
+    .navbar {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .navbar {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 1201px) {
+    .navbar {
+        font-size: 24px;
     }
 }
