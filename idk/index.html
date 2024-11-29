@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function onClick() {
+            document.getElementById("a").classList.toggle("minimazed");
+        }
+    </script>
+    <style>
+        html,
+        body {
+            padding: 0px;
+            margin: 0px;
+            display: flex;
+            height: 100vh;
+        }
+
+        .grow-0 {
+            flex-grow: 0;
+            background-color: blue;
+            color: white;
+            width: 200px;
+        }
+
+        .grow-1 {
+            flex-grow: 1;
+        }
+
+        .minimazed {
+            width: 0px;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 20px;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="grow-0" id="a">
+        Hello world!
+    </div>
+    <div class="grow-1">
+        <button id="bnt" onclick="onClick()">Minimaze</button>
+    </div>
+</body>
+</html>
